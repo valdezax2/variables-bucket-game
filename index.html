@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>The Bucket Room — Python Variables</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%A3%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ SCREEN: INTRO ============ -->
+    <section id="screen-intro" class="screen active">
+      <div class="intro-card">
+        <div class="intro-emoji">🪣</div>
+        <h1>Python Variables</h1>
+        <p class="subtitle">The Bucket Room Game</p>
+        <p class="intro-blurb">
+          In Python, a <code>variable</code> is like a <strong>bucket</strong> that holds a value.
+          Clear the room, learn what variables are, and unlock the next level.
+        </p>
+        <label for="name-input">Your first name</label>
+        <input id="name-input" type="text" autocomplete="off" placeholder="e.g. Sam" maxlength="30" />
+        <label for="id-input">Student ID (a number from 1 to 28)</label>
+        <input id="id-input" type="number" min="1" max="28" placeholder="e.g. 7" />
+        <div id="intro-error" class="error" hidden></div>
+        <button id="btn-start" class="btn primary" disabled>Start the Game →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN: GAME (LEVEL 1) ============ -->
+    <section id="screen-game" class="screen">
+      <div class="hud">
+        <div class="hud-left">
+          <button id="btn-reset" class="btn ghost" title="Shuffle the room again">↻</button>
+          <span id="hud-level">Level 1</span>
+          <span id="hud-name" class="hud-name"></span>
+        </div>
+        <div id="hud-progress" class="progress">
+          <div id="hud-progress-fill"></div>
+          <span id="hud-progress-label">0 / 0 in bucket</span>
+        </div>
+      </div>
+
+      <div id="room">
+        <div id="items-layer"></div>
+        <div id="bucket" class="bucket" data-draggable>
+          <div class="bucket-inner">🪣</div>
+          <div id="bucket-contents"></div>
+          <div class="bucket-label">BATCH? No— a <b>bucket</b>. Drag me!</div>
+        </div>
+        <div id="bucket-slot" title="Drag the bucket here"></div>
+      </div>
+
+      <div id="game-hint">
+        Find the <b>bucket 🪣</b> in the room and drag it into the corner.
+        Then drag every other item into it.
+      </div>
+    </section>
+
+    <!-- ============ SCREEN: LESSON MODAL (after Level 1) ============ -->
+    <div id="lesson-modal" class="modal" hidden>
+      <div class="modal-card">
+        <h2>📖 What just happened?</h2>
+        <div class="lesson-scroll">
+          <p>
+            Every object you dragged into the bucket is like a <b>variable</b> in Python.
+            A variable is a <em>named container</em> that stores a value so the program
+            can remember it and use it again later.
+          </p>
+
+          <h3>Why do programmers use variables?</h3>
+          <ul class="lesson-list">
+            <li><b>Store data</b> — keep a value around so you don't have to re-type it.</li>
+            <li><b>Name things</b> — a good name (<code>score</code>, <code>username</code>) tells you what the value means.</li>
+            <li><b>Change values</b> — you can put a new value into the same bucket without breaking the program.</li>
+            <li><b>Make code modular &amp; reusable</b> — write once, change once, use everywhere.</li>
+          </ul>
+
+          <h3>Python syntax</h3>
+          <pre><code>score = 10      # put the value 10 into the bucket "score"
+score = 20      # put a new value in the SAME bucket (the old one is gone)
+print(score)    # → 20</code></pre>
+
+          <h3>A variable has three parts</h3>
+          <table class="lesson-table">
+            <tr><th>Part</th><th>Example</th><th>What it is</th></tr>
+            <tr><td>Bucket name</td><td><code>score</code></td><td>The variable's name — what you call it</td></tr>
+            <tr><td><code>=</code> (assignment)</td><td><code>=</code></td><td>The action of putting a value IN the bucket</td></tr>
+            <tr><td>Value</td><td><code>10</code></td><td>The data being stored</td></tr>
+          </table>
+
+          <h3>Rules to remember</h3>
+          <ol class="lesson-list">
+            <li>The bucket name must start with a <b>letter</b> or <b>underscore</b> — no digits, no spaces, no <code>-</code>.</li>
+            <li>Names are <b>case-sensitive</code>: <code>Score</code> and <code>score</code> are two different buckets.</li>
+            <li>You can <b>overwrite</b> a bucket — the old value is discarded when you assign a new one.</li>
+            <li>One bucket, one value at a time. You can't shove two things into the same bucket.</li>
+          </ol>
+
+          <h3>Try it mentally</h3>
+          <pre><code>a = 5
+b = a        # b now also holds 5
+a = 9        # a now holds 9 — b is STILL 5
+print(a, b)  # → 9 5</code></pre>
+
+          <p class="lesson-copy-note">
+            ✍️ <b>Take notes.</b> Write down the definition of a variable and the 3 parts
+            in your notebook — you'll use this in class.
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <div class="password-box">
+            <div class="password-label">Your password for Level 2</div>
+            <div id="lesson-password" class="password-value">—</div>
+            <div class="password-hint">Write it down. You'll need it to unlock Level 2.</div>
+          </div>
+          <button id="btn-lesson-done" class="btn primary">I've taken notes →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: PASSWORD GATE (Level 2 unlock) ============ -->
+    <section id="screen-gate" class="screen">
+      <div class="gate-card">
+        <h2>🔒 Unlock Level 2</h2>
+        <p>Enter the password you were given after Level 1.</p>
+        <input id="gate-input" type="text" autocomplete="off" placeholder="type password…" />
+        <div id="gate-error" class="error" hidden></div>
+        <button id="btn-gate" class="btn primary">Unlock →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN: LEVEL 2 (game) ============ -->
+    <section id="screen-level2" class="screen">
+      <div class="hud">
+        <div class="hud-left">
+          <span id="hud-level">Level 2</span>
+          <span id="hud-name2" class="hud-name"></span>
+        </div>
+        <div id="hud-progress2" class="progress">
+          <div id="hud-progress2-fill"></div>
+          <span id="hud-progress2-label">0 / 20 sorted</span>
+        </div>
+      </div>
+
+      <div id="l2-tray">
+        <button id="btn-add-bucket" class="btn primary add-bucket">＋ Add bucket 🪣</button>
+        <span class="tray-hint">Unlimited buckets — add as many as you need.</span>
+      </div>
+
+      <div id="l2-rack">
+        <div id="l2-rack-items"></div>
+        <div id="l2-buckets"></div>
+      </div>
+
+      <div id="l2-hint">
+        Tap <b>“Add bucket 🪣”</b>, tap a bucket to label it with a category, then drag items in.
+      </div>
+    </section>
+
+    <!-- ============ MODAL: LEVEL 2 LESSON ============ -->
+    <div id="lesson-modal-2" class="modal" hidden>
+      <div class="modal-card">
+        <h2>📖 Level 2 — Good Names &amp; Data Types</h2>
+        <div class="lesson-scroll">
+          <p>
+            You just sorted 20 items into labeled buckets. That’s exactly how a good programmer
+            uses <b>variables</b>: each bucket had a <b>name</b> (the label) that described
+            <em>what goes inside</em>.
+          </p>
+
+          <h3>1 · Meaningful naming</h3>
+          <p>A variable’s name should tell you what it holds — without you having to look at the value.</p>
+          <pre><code># ❌ bad — what is "x" or "b"?
+x = 10
+b = ["apple", "juice"]
+
+# ✅ good — the name describes the contents
+score = 10
+snacks = ["apple", "juice"]</code></pre>
+          <p>In Level 2, <code>food</code> is a great name for a bucket of 🍎🍕🧃🍞. A bucket named <code>stuff</code> would be useless — you’d have to open it to see what’s inside.</p>
+
+          <h3>2 · Data types</h3>
+          <p>Every value in a bucket has a <b>type</b>. Python’s core types:</p>
+          <table class="lesson-table">
+            <tr><th>Type</th><th>Example value</th><th>Example variable</th></tr>
+            <tr><td><code>int</code> (whole number)</td><td><code>10</code></td><td><code>score = 10</code></td></tr>
+            <tr><td><code>float</code> (decimal)</td><td><code>9.99</code></td><td><code>price = 9.99</code></td></tr>
+            <tr><td><code>str</code> (text)</td><td><code>"Sam"</code></td><td><code>name = "Sam"</code></td></tr>
+            <tr><td><code>bool</code> (True/False)</td><td><code>True</code></td><td><code>is_tall = True</code></td></tr>
+            <tr><td><code>list</code> (many values)</td><td><code>["apple","juice"]</code></td><td><code>snacks = ["apple","juice"]</code></td></tr>
+          </table>
+          <p>You can check a value’s type with <code>type(score)</code> → <code>&lt;class 'int'&gt;</code>.</p>
+
+          <h3>📝 Your turn — write a variable name</h3>
+          <p>
+            Look at these items. Name <b>ONE variable</b> that could hold as many of them as
+            possible, then explain <em>why</em> that’s a good name.
+          </p>
+          <div id="worksheet-items" class="worksheet-items"><!-- items injected --></div>
+          <label for="ws-name">Your variable name (e.g. <code>animals</code>, <code>things_i_own</code>)</label>
+          <input id="ws-name" type="text" autocomplete="off" placeholder="type a name…" />
+          <label for="ws-why">Why is that a good name?</label>
+          <textarea id="ws-why" rows="3" placeholder="It groups the most items together because…"></textarea>
+
+          <p class="lesson-copy-note">
+            🙋 When you’re done writing, <b>raise your hand</b> and wait for me to come check
+            your work. Then I’ll give you the unlock for the Google Classroom code.
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-raise-hand" class="btn primary" disabled>🙋 I’m done — raise my hand</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: COMPLETION + CLASSROOM CODE ============ -->
+    <div id="completion-modal" class="modal" hidden>
+      <div class="modal-card">
+        <h2>🎉 Level 2 Complete!</h2>
+        <div class="lesson-scroll">
+          <p>
+            You sorted all 20 items using well-named variable buckets. Here’s your
+            <b>Google Classroom code</b> to submit your work.
+          </p>
+          <ol class="lesson-list">
+            <li>Open <b>Google Classroom</b>.</li>
+            <li>Find the assignment titled <b>“Day Two: Variables.”</b></li>
+            <li>Submit the code below (or a photo of your worksheet notes).</li>
+          </ol>
+          <div class="code-box">
+            <div class="code-label">Your code</div>
+            <div id="classroom-code" class="code-value">—</div>
+            <button id="btn-copy-code" class="btn ghost copy-btn">Copy code</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-back-home" class="btn ghost">← Back to start</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/seeded.js"></script>
+  <script src="js/level1.js"></script>
+  <script src="js/level2.js"></script>
+  <script src="js/main.js"></script>
+
+  <script src="js/seeded.js"></script>
+  <script src="js/level1.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
