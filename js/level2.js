@@ -131,8 +131,8 @@
     }
 
     openLabelPanel(bucket) {
-      // close any open panel
-      this.root.querySelectorAll(".l2-label-panel").forEach((p) => p.remove());
+      // close any open panel (they live on <body> now, so search there)
+      document.querySelectorAll(".l2-label-panel").forEach((p) => p.remove());
 
       const panel = document.createElement("div");
       panel.className = "l2-label-panel";
@@ -147,7 +147,8 @@
         '<button class="btn primary l2-label-set">Set label</button>' +
         '<button class="btn ghost l2-label-cancel">Cancel</button>' +
         "</div>";
-      bucket.el.appendChild(panel);
+      // Append to <body> so the room's scroll/clip can't cut it off.
+      document.body.appendChild(panel);
 
       const sel = panel.querySelector(".l2-cat-select");
       const prev = panel.querySelector(".l2-varname");
@@ -170,6 +171,11 @@
         this.setHint("Bucket <b>" + catKey + "</b> is ready. Drag " + cat.emoji + " items into it.");
       });
       panel.querySelector(".l2-label-cancel").addEventListener("click", () => panel.remove());
+      // tap anywhere on the dimmed area (outside the card content) to dismiss
+      panel.addEventListener("pointerdown", (e) => {
+        if (e.target === panel) panel.remove();
+      });
+      sel.focus();
     }
 
     // ---- drag handling (pointer events: mouse + touch) ----

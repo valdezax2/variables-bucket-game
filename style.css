@@ -414,7 +414,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235
   border: 10px solid var(--room-wall);
   overflow-y: auto;
   touch-action: pan-y;
-  min-height: 320px;
+  min-height: 420px;
 }
 #l2-rack-items {
   display: flex;
@@ -498,21 +498,29 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235
 .l2-bucket.cat-toys     { border-color: #9333ea; }
 .l2-bucket.cat-tech     { border-color: #0891b2; }
 
-/* label panel */
+/* label panel — a viewport-centered popover so it's never clipped by the
+   room's scroll area, regardless of where the bucket sits */
 .l2-label-panel {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
-  z-index: 80;
-  width: 200px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  width: 230px;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 12px;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(2, 6, 23, .45);
+  padding: 16px;
   text-align: left;
   color: var(--ink);
+}
+.l2-label-panel::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(2, 6, 23, .35);
 }
 .l2-label-title { font-weight: 800; font-size: 13px; margin-bottom: 6px; }
 .l2-label-panel label { margin: 6px 0 4px; font-size: 12px; }
