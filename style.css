@@ -439,12 +439,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235
   min-width: 64px;
 }
 .l2-item.dragging { cursor: grabbing; box-shadow: 0 14px 28px rgba(0,0,0,.28); background: rgba(255,255,255,.9); }
-.l2-drag-overlay {
-  position: fixed;
-  z-index: 100;
-  pointer-events: none;
-  margin: 0;
-}
 .l2-item.shake { animation: shake .4s; }
 @keyframes shake {
   0%,100% { transform: translateX(0); }

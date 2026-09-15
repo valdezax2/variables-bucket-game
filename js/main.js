@@ -136,7 +136,9 @@
   let level2 = null;
   function startLevel2() {
     showScreen("level2");
+    if (level2) return; // guard against double-init
     requestAnimationFrame(() => {
+      if (level2) return;
       level2 = new Level2(screens.level2, {
         player: { name: state.name, id: state.id },
         onProgress: (done, total) => {
@@ -205,6 +207,7 @@
 
   $("#btn-back-home").addEventListener("click", () => {
     state.level1Done = false;
+    level2 = null;
     nameInput.value = state.name;
     idInput.value = state.id;
     $("#completion-modal").hidden = true;

@@ -100,7 +100,9 @@
 
     // ---- bucket tray ----
     bindTray() {
-      this.trayBtn.addEventListener("click", () => this.addBucket());
+      // Replace any prior listener so a re-instantiated Level2 doesn't
+      // accumulate duplicate click handlers on the shared button.
+      this.trayBtn.onclick = () => this.addBucket();
     }
 
     addBucket() {
@@ -171,8 +173,8 @@
     }
 
     // ---- drag handling (pointer events: mouse + touch) ----
-    // Items are lifted into a fixed, full-viewport overlay so the rack
-    // doesn't scroll mid-drag. Hit-testing is done in client coordinates.
+    // The item stays in the DOM; we switch it to position:fixed and track
+    // clientX/Y. Hit-testing uses getBoundingClientRect on the buckets.
     bindDrag() {
       const self = this;
       const rack = this.rack;
@@ -187,34 +189,32 @@
         const obj = self.items.find((o) => o.el === el);
         if (!obj) return;
 
-        const rect = el.getBoundingClientRect();
-        const grabDX = e.clientX - rect.left;
-        const grabDY = e.clientY - rect.top;
+        // Use transform to drag — the item stays in normal flow, so the
+        // rack and buckets don't reflow mid-drag (keeps drop targets stable).
+        const startX = e.clientX;
+        const startY = e.clientY;
+        let dx = 0, dy = 0;
 
-        // lift into a fixed overlay
-        const overlay = document.createElement("div");
-        overlay.className = "l2-drag-overlay";
-        overlay.style.left = rect.left + "px";
-        overlay.style.top = rect.top + "px";
-        overlay.appendChild(el); // moves the node out of the rack
-        document.body.appendChild(overlay);
         el.classList.add("dragging");
-        el.style.position = "absolute";
-        el.style.left = "0px";
-        el.style.top = "0px";
+        el.style.zIndex = "100";
 
         function onMove(ev) {
-          overlay.style.left = (ev.clientX - grabDX) + "px";
-          overlay.style.top = (ev.clientY - grabDY) + "px";
+          dx = ev.clientX - startX;
+          dy = ev.clientY - startY;
+          el.style.transform = "translate(" + dx + "px," + dy + "px)";
         }
 
-        function onUp() {
+        function onUp(ev) {
           document.removeEventListener("pointermove", onMove);
           document.removeEventListener("pointerup", onUp);
           document.removeEventListener("pointercancel", onUp);
 
-          const cx = parseFloat(overlay.style.left) + el.offsetWidth / 2;
-          const cy = parseFloat(overlay.style.top) + el.offsetHeight / 2;
+          // drop point = where the pointer was released
+          const cx = ev.clientX;
+          const cy = ev.clientY;
+          el.style.transform = "";
+          el.classList.remove("dragging");
+          el.style.zIndex = "";
 
           // hit-test buckets in client coordinates
           const dropped = self.buckets.find((bk) => {
@@ -224,25 +224,14 @@
                    cy > bb.top && cy < bb.top + bb.height;
           });
 
-          el.classList.remove("dragging");
-          el.style.position = "";
-          el.style.left = "";
-          el.style.top = "";
-
           if (dropped) {
             if (dropped.label === obj.cat) {
               self.putInBucket(obj, dropped);
-              overlay.remove();
             } else {
-              // return to rack, then reject (shake + hint)
-              self.rackItems.appendChild(el);
-              overlay.remove();
               self.rejectDrop(obj, dropped);
             }
-          } else {
-            self.rackItems.appendChild(el);
-            overlay.remove();
           }
+          // if not dropped on any bucket, item stays in its rack slot
         }
 
         document.addEventListener("pointermove", onMove);
